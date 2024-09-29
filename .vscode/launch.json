@@ -1,0 +1,49 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        {
+            "name": "static-example",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/static-example/static-example",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/static-example",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "make-static-example"
+        },
+        {
+            "name": "basic-broadcast",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/basic-broadcast/basic-broadcast",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/basic-broadcast",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "make-basic-broadcast"
+        },
+        {
+            "name": "basic-echo",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/basic-echo/basic-echo",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/basic-echo",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "make-basic-echo"
+        }
+
+    ]
+}
