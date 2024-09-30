@@ -1,9 +1,9 @@
 #ifndef NS3_HOW_TO_BBA_SHARED_H_
 #define NS3_HOW_TO_BBA_SHARED_H_
 
-#define NS3_LOG_ENABLE
+#include "config.h"
 
-#define NETANIM_ENABLED
+#define NS3_LOG_ENABLE
 
 
 #include "ns3/log.h"

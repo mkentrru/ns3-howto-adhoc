@@ -1,13 +1,12 @@
 #include "basic-echo.h"
 
-// #undef NETANIM_ENABLED
 #ifdef NETANIM_ENABLED
 #include "ns3/netanim-module.h"
 #endif
 
 NS_LOG_COMPONENT_DEFINE("basic-echo");
 
-int main()
+int main(int argc, char *argv[])
 {
     // Init ns3 static lib objects
     INIT_STATIC_NS3;
@@ -18,13 +17,14 @@ int main()
 
     // Parse arguments
     uint32_t numNodes{2};
-    double radius = 1;
+    double radius = 5;
     double velocity = 1;
 
     ns3::CommandLine cmd(__FILE__);
     cmd.AddValue("n", "Number of nodes", numNodes);
     cmd.AddValue("r", "Radius of distribution", radius);
-    cmd.AddValue("v", "Velocity of moving from center", velocity);
+    // cmd.AddValue("v", "Velocity of moving from center", velocity);
+    cmd.Parse(argc, argv);
 
     // Create nodes:
     ns3::NodeContainer c;
@@ -46,15 +46,12 @@ int main()
 
 #ifdef NETANIM_ENABLED
     ns3::AnimationInterface anim("animation.xml");
-    anim.SetMobilityPollInterval(ns3::Seconds(1));
-    // anim.EnablePacketMetadata(true);
+    anim.SetMobilityPollInterval(ns3::MilliSeconds(100));
+    anim.EnablePacketMetadata(true);
+    anim.EnableWifiMacCounters(ns3::Seconds(0), ns3::Seconds(10));
+    anim.EnableWifiPhyCounters(ns3::Seconds(0), ns3::Seconds(10));
 #endif
-    for (auto i = 0; i < c.GetN(); i++)
-    {
-        NS_LOG_INFO(
-            "node " << i << "pos: "
-                    << c.Get(i)->GetObject<ns3::MobilityModel>()->GetPosition());
-    }
+
     // Run configured simulation
     ns3::Simulator::Stop(ns3::Seconds(5));
     ns3::Simulator::Run();

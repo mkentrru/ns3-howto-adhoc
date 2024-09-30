@@ -7,14 +7,16 @@ class BasicHeader : public ns3::Header
 {
 public:
     BasicHeader();
-    BasicHeader(uint32_t id);
+    BasicHeader(uint32_t id, uint32_t seq);
     static ns3::TypeId GetTypeId();
     // header fields
 private:
     uint32_t p_id;
+    uint32_t p_seq;
 
 public:
     void SetNodeId(uint32_t);
+    void SetSeq(uint32_t);
     
 
 public:

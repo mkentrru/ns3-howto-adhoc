@@ -1,7 +1,6 @@
 #include "mobility-helper.h"
 #include "ns3/constant-velocity-mobility-model.h"
 
-
 ns3::Vector VectorFromAngle(double length, double angle)
 {
     return ns3::Vector(
@@ -23,7 +22,7 @@ void DistributeAroundCircle(
     ns3::Vector2D v_center)
 {
     double c_angle = 0;
-    double angle_diff = M_PI_2 / c.GetN();
+    double angle_diff = (2 * M_PI) / c.GetN();
     double c_x = 0, c_y = 0;
 
     // ns3::ConstantVelocityMobilityModel
@@ -37,6 +36,9 @@ void DistributeAroundCircle(
             ns3::CreateObject<ns3::ConstantVelocityMobilityModel>();
         (*i_node)->AggregateObject(mobility);
         mobility->SetPosition(node_pos);
-        mobility->SetVelocity(node_pos);
+#ifdef NODES_MOVE
+        mobility->SetVelocity(node_velocity);
+#endif
+
     }
 }

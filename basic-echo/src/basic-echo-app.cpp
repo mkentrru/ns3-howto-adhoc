@@ -13,7 +13,7 @@ ns3::TypeId EchoApp::GetTypeId()
     return tid;
 }
 EchoApp::EchoApp()
-    : BasicApp()
+    : BasicApp(), p_seq(0)
 {
 }
 EchoApp::~EchoApp()
@@ -21,20 +21,19 @@ EchoApp::~EchoApp()
     NS_LOG_FUNCTION(this);
 }
 
+uint32_t EchoApp::NextSeq()
+{
+    uint32_t old_seq = p_seq;
+    p_seq = p_seq + 1;
+    return old_seq;
+}
+
 bool EchoApp::DoBroadcast(ns3::Ptr<ns3::Packet> data)
 {
-    // std::ostringstream s;
-    // data->CopyData(&s, data->GetSize());
-
-    BasicHeader pkt_header(GetNodeId());
+    BasicHeader pkt_header(GetNodeId(), NextSeq());
     data->AddHeader(pkt_header);
-
     bool res = p_dev->Send(data, p_dev->GetBroadcast(), 0);
-    // NS_LOG_INFO(LOG_PREFIX
-    //             << "BROADCAST: " << (res ? "OK" : "FAILED") << s.str() );
-
-    NS_LOG_INFO(LOG_PREFIX
-                << " >> SEND: " << (res ? "OK" : "FAILED"));
+    NS_LOG_INFO(LOG_PREFIX << " >> SEND: " << pkt_header << " :" << (res ? "OK" : "FAILED"));
     return res;
 }
 
@@ -47,18 +46,10 @@ bool EchoApp::HandlePromiscReceive(
     ns3::NetDevice::PacketType sent_type)
 {
     ScheduleTestBroadcast();
-
     ns3::Ptr<ns3::Packet> pkt_copy = eth_pkt->Copy();
     BasicHeader h;
     pkt_copy->RemoveHeader(h);
 
-    // std::ostringstream s;
-    // pkt_copy->CopyData(&s, pkt_copy->GetSize());
-    // NS_LOG_INFO(LOG_PREFIX
-    //             << "RECV FROM " << h
-    //             << "; DATA: " << s.str());
-
-    NS_LOG_INFO(LOG_PREFIX
-                << " << RECV FROM " << h);
+    NS_LOG_INFO(LOG_PREFIX << " << RECV: " << h);
     return true;
 }

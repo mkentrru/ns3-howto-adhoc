@@ -1,19 +1,135 @@
 <anim ver="netanim-3.109" filetype="animation" >
-<node id="0" sysId="0" locX="1" locY="0" />
-<node id="1" sysId="0" locX="0.7071067812" locY="0.7071067812" />
+<node id="0" sysId="0" locX="5" locY="0" />
+<node id="1" sysId="0" locX="-5" locY="6.123233996e-16" />
 <nu p="c" t="0" id="0" r="255" g="0" b="0" />
 <nu p="c" t="0" id="1" r="255" g="0" b="0" />
 <nu p="s" t="0" id="0" w="1" h="1" />
 <nu p="s" t="0" id="1" w="1" h="1" />
 <ncs ncId="0" n="RemainingEnergy" t="DOUBLE" />
-<nu p="p" t="0.25" id="0" x="1.25" y="0" />
-<pr uId="1" fId="0" fbTx="1.00005" />
-<wpr uId="1" tId="1" fbRx="1.000054005" lbRx="0" />
-<pr uId="2" fId="1" fbTx="2.000660005" />
-<wpr uId="2" tId="0" fbRx="2.000664013" lbRx="0" />
-<pr uId="3" fId="0" fbTx="3.001270013" />
-<wpr uId="3" tId="1" fbRx="3.001274023" lbRx="0" />
-<nu p="p" t="3.25" id="1" x="3.00520382" y="3.00520382" />
-<pr uId="4" fId="1" fbTx="4.001880023" />
-<wpr uId="4" tId="0" fbRx="4.001884036" lbRx="0" />
+<ncs ncId="1" n="WifiMac Tx" t="DOUBLE" />
+<ncs ncId="2" n="WifiMac TxDrop" t="DOUBLE" />
+<ncs ncId="3" n="WifiMac Rx" t="DOUBLE" />
+<ncs ncId="4" n="WifiMac RxDrop" t="DOUBLE" />
+<nc c="1" i="0" t="0" v="0" />
+<nc c="2" i="0" t="0" v="0" />
+<nc c="3" i="0" t="0" v="0" />
+<nc c="4" i="0" t="0" v="0" />
+<nc c="1" i="1" t="0" v="0" />
+<nc c="2" i="1" t="0" v="0" />
+<nc c="3" i="1" t="0" v="0" />
+<nc c="4" i="1" t="0" v="0" />
+<ncs ncId="5" n="WifiPhy TxDrop" t="DOUBLE" />
+<ncs ncId="6" n="WifiPhy RxDrop" t="DOUBLE" />
+<nc c="5" i="0" t="0" v="0" />
+<nc c="6" i="0" t="0" v="0" />
+<nc c="5" i="1" t="0" v="0" />
+<nc c="6" i="1" t="0" v="0" />
+<nc c="1" i="0" t="0" v="0" />
+<nc c="2" i="0" t="0" v="0" />
+<nc c="3" i="0" t="0" v="0" />
+<nc c="4" i="0" t="0" v="0" />
+<nc c="1" i="1" t="0" v="0" />
+<nc c="2" i="1" t="0" v="0" />
+<nc c="3" i="1" t="0" v="0" />
+<nc c="4" i="1" t="0" v="0" />
+<nc c="5" i="0" t="0" v="0" />
+<nc c="6" i="0" t="0" v="0" />
+<nc c="5" i="1" t="0" v="0" />
+<nc c="6" i="1" t="0" v="0" />
+<nu p="p" t="0.25" id="0" x="6.25" y="0" />
+<nu p="p" t="0.25" id="1" x="-6.25" y="7.654042495e-16" />
+<nu p="p" t="0.45" id="0" x="7.25" y="0" />
+<nu p="p" t="0.45" id="1" x="-7.25" y="8.878689294e-16" />
+<nu p="p" t="0.65" id="0" x="8.25" y="0" />
+<nu p="p" t="0.65" id="1" x="-8.25" y="1.010333609e-15" />
+<nu p="p" t="0.85" id="0" x="9.25" y="0" />
+<nu p="p" t="0.85" id="1" x="-9.25" y="1.132798289e-15" />
+<nc c="1" i="0" t="1" v="1" />
+<nc c="2" i="0" t="1" v="0" />
+<nc c="3" i="0" t="1" v="0" />
+<nc c="4" i="0" t="1" v="0" />
+<nc c="1" i="1" t="1" v="0" />
+<nc c="2" i="1" t="1" v="0" />
+<nc c="3" i="1" t="1" v="0" />
+<nc c="4" i="1" t="1" v="0" />
+<nc c="5" i="0" t="1" v="0" />
+<nc c="6" i="0" t="1" v="0" />
+<nc c="5" i="1" t="1" v="0" />
+<nc c="6" i="1" t="1" v="0" />
+<pr uId="1" fId="0" fbTx="1.00005" meta-info="ns3::WifiMacHeader (DATA ToDS=0, FromDS=0, MoreFrag=0, Retry=0, PowerManagement=0, MoreData=0 Duration/ID=0us, DA=ff:ff:ff:ff:ff:ff, SA=00:00:00:00:00:01, BSSID=00:00:00:00:00:01, FragNumber=0, SeqNumber=0) ns3::LlcSnapHeader (type 0x0) BasicHeader (ID:0) Payload (size=6) ns3::WifiMacTrailer ()" />
+<wpr uId="1" tId="1" fbRx="1.000054067" lbRx="0" />
+<nu p="p" t="1.25" id="0" x="11.25" y="0" />
+<nu p="p" t="1.25" id="1" x="-11.25" y="1.377727649e-15" />
+<nu p="p" t="1.45" id="0" x="12.25" y="0" />
+<nu p="p" t="1.45" id="1" x="-12.25" y="1.500192329e-15" />
+<nu p="p" t="1.65" id="0" x="13.25" y="0" />
+<nu p="p" t="1.65" id="1" x="-13.25" y="1.622657009e-15" />
+<nu p="p" t="1.85" id="0" x="14.25" y="0" />
+<nu p="p" t="1.85" id="1" x="-14.25" y="1.745121689e-15" />
+<nc c="1" i="0" t="2" v="1" />
+<nc c="2" i="0" t="2" v="0" />
+<nc c="3" i="0" t="2" v="0" />
+<nc c="4" i="0" t="2" v="0" />
+<nc c="1" i="1" t="2" v="0" />
+<nc c="2" i="1" t="2" v="0" />
+<nc c="3" i="1" t="2" v="1" />
+<nc c="4" i="1" t="2" v="0" />
+<nc c="5" i="0" t="2" v="0" />
+<nc c="6" i="0" t="2" v="0" />
+<nc c="5" i="1" t="2" v="0" />
+<nc c="6" i="1" t="2" v="0" />
+<pr uId="2" fId="1" fbTx="2.000660067" meta-info="ns3::WifiMacHeader (DATA ToDS=0, FromDS=0, MoreFrag=0, Retry=0, PowerManagement=0, MoreData=0 Duration/ID=0us, DA=ff:ff:ff:ff:ff:ff, SA=00:00:00:00:00:02, BSSID=00:00:00:00:00:02, FragNumber=0, SeqNumber=0) ns3::LlcSnapHeader (type 0x0) BasicHeader (ID:1) Payload (size=6) ns3::WifiMacTrailer ()" />
+<wpr uId="2" tId="0" fbRx="2.000664167" lbRx="0" />
+<nu p="p" t="2.25" id="0" x="16.25" y="0" />
+<nu p="p" t="2.25" id="1" x="-16.25" y="1.990051049e-15" />
+<nu p="p" t="2.45" id="0" x="17.25" y="0" />
+<nu p="p" t="2.45" id="1" x="-17.25" y="2.112515729e-15" />
+<nu p="p" t="2.65" id="0" x="18.25" y="0" />
+<nu p="p" t="2.65" id="1" x="-18.25" y="2.234980408e-15" />
+<nu p="p" t="2.85" id="0" x="19.25" y="0" />
+<nu p="p" t="2.85" id="1" x="-19.25" y="2.357445088e-15" />
+<nc c="1" i="0" t="3" v="1" />
+<nc c="2" i="0" t="3" v="0" />
+<nc c="3" i="0" t="3" v="1" />
+<nc c="4" i="0" t="3" v="0" />
+<nc c="1" i="1" t="3" v="1" />
+<nc c="2" i="1" t="3" v="0" />
+<nc c="3" i="1" t="3" v="1" />
+<nc c="4" i="1" t="3" v="0" />
+<nc c="5" i="0" t="3" v="0" />
+<nc c="6" i="0" t="3" v="0" />
+<nc c="5" i="1" t="3" v="0" />
+<nc c="6" i="1" t="3" v="0" />
+<pr uId="3" fId="0" fbTx="3.001270167" meta-info="ns3::WifiMacHeader (DATA ToDS=0, FromDS=0, MoreFrag=0, Retry=0, PowerManagement=0, MoreData=0 Duration/ID=0us, DA=ff:ff:ff:ff:ff:ff, SA=00:00:00:00:00:01, BSSID=00:00:00:00:00:01, FragNumber=0, SeqNumber=1) ns3::LlcSnapHeader (type 0x0) BasicHeader (ID:0) Payload (size=6) ns3::WifiMacTrailer ()" />
+<wpr uId="3" tId="1" fbRx="3.0012743" lbRx="0" />
+<nu p="p" t="3.25" id="0" x="21.25" y="0" />
+<nu p="p" t="3.25" id="1" x="-21.25" y="2.602374448e-15" />
+<nu p="p" t="3.45" id="0" x="22.25" y="0" />
+<nu p="p" t="3.45" id="1" x="-22.25" y="2.724839128e-15" />
+<nu p="p" t="3.65" id="0" x="23.25" y="0" />
+<nu p="p" t="3.65" id="1" x="-23.25" y="2.847303808e-15" />
+<nu p="p" t="3.85" id="0" x="24.25" y="0" />
+<nu p="p" t="3.85" id="1" x="-24.25" y="2.969768488e-15" />
+<nc c="1" i="0" t="4" v="2" />
+<nc c="2" i="0" t="4" v="0" />
+<nc c="3" i="0" t="4" v="1" />
+<nc c="4" i="0" t="4" v="0" />
+<nc c="1" i="1" t="4" v="1" />
+<nc c="2" i="1" t="4" v="0" />
+<nc c="3" i="1" t="4" v="2" />
+<nc c="4" i="1" t="4" v="0" />
+<nc c="5" i="0" t="4" v="0" />
+<nc c="6" i="0" t="4" v="0" />
+<nc c="5" i="1" t="4" v="0" />
+<nc c="6" i="1" t="4" v="0" />
+<pr uId="4" fId="1" fbTx="4.0018803" meta-info="ns3::WifiMacHeader (DATA ToDS=0, FromDS=0, MoreFrag=0, Retry=0, PowerManagement=0, MoreData=0 Duration/ID=0us, DA=ff:ff:ff:ff:ff:ff, SA=00:00:00:00:00:02, BSSID=00:00:00:00:00:02, FragNumber=0, SeqNumber=1) ns3::LlcSnapHeader (type 0x0) BasicHeader (ID:1) Payload (size=6) ns3::WifiMacTrailer ()" />
+<wpr uId="4" tId="0" fbRx="4.001884467" lbRx="0" />
+<nu p="p" t="4.25" id="0" x="26.25" y="0" />
+<nu p="p" t="4.25" id="1" x="-26.25" y="3.214697848e-15" />
+<nu p="p" t="4.45" id="0" x="27.25" y="0" />
+<nu p="p" t="4.45" id="1" x="-27.25" y="3.337162528e-15" />
+<nu p="p" t="4.65" id="0" x="28.25" y="0" />
+<nu p="p" t="4.65" id="1" x="-28.25" y="3.459627208e-15" />
+<nu p="p" t="4.85" id="0" x="29.25" y="0" />
+<nu p="p" t="4.85" id="1" x="-29.25" y="3.582091888e-15" />
 </anim>

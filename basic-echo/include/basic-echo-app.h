@@ -20,6 +20,10 @@ public:
         const ns3::Address &eth_addr_src,
         const ns3::Address &eth_addr_dst,
         ns3::NetDevice::PacketType sent_type) override;
+
+private:
+    uint32_t NextSeq ();
+    uint32_t p_seq;
 };
 
 using EchoAppInstaller = AppInstallHelper<EchoApp>;
