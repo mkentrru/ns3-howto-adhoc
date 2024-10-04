@@ -1,0 +1,63 @@
+ >           +1000ms    [ 0]  >> SEND: #0:0 :OK
+ >        +1000.64ms    [ 1]  << RECV: #0:0
+ >        +1000.64ms    [ 2]  << RECV: #0:0
+ >        +2000.64ms    [ 1]  >> SEND: #1:0 :OK
+ >        +2000.64ms    [ 2]  >> SEND: #2:0 :OK
+ >        +2000.69ms    [ 2]  -- DROP: TXING
+ >        +2000.69ms    [ 2]  >> SEND: #2:1 :OK
+ >        +2000.69ms    [ 1]  -- DROP: TXING
+ >        +2000.69ms    [ 1]  >> SEND: #1:1 :OK
+ >         +2000.7ms    [ 0]  -- DROP: PREAMBLE_DETECT_FAILURE
+ >         +2000.7ms    [ 0]  -- DROP: PREAMBLE_DETECT_FAILURE
+ >        +2002.07ms    [ 0]  << RECV: #2:1
+ >        +2002.07ms    [ 1]  << RECV: #2:1
+ >           +2003ms    [ 0]  << RECV: #1:1
+ >           +2003ms    [ 2]  << RECV: #1:1
+ >        +3002.07ms    [ 0]  >> SEND: #0:1 :OK
+ >        +3002.07ms    [ 1]  >> SEND: #1:2 :OK
+ >        +3002.12ms    [ 1]  -- DROP: TXING
+ >        +3002.12ms    [ 1]  >> SEND: #1:3 :OK
+ >        +3002.12ms    [ 0]  -- DROP: TXING
+ >        +3002.12ms    [ 0]  >> SEND: #0:2 :OK
+ >        +3002.13ms    [ 2]  -- DROP: PREAMBLE_DETECT_FAILURE
+ >        +3002.13ms    [ 2]  -- DROP: PREAMBLE_DETECT_FAILURE
+ >           +3003ms    [ 0]  >> SEND: #0:3 :OK
+ >           +3003ms    [ 2]  >> SEND: #2:2 :OK
+ >        +3003.59ms    [ 0]  << RECV: #1:3
+ >        +3003.59ms    [ 2]  << RECV: #1:3
+ >        +3004.27ms    [ 0]  << RECV: #2:2
+ >        +3004.27ms    [ 1]  << RECV: #2:2
+ >           +3005ms    [ 1]  << RECV: #0:2
+ >           +3005ms    [ 2]  << RECV: #0:2
+ >        +3005.64ms    [ 1]  << RECV: #0:3
+ >        +3005.64ms    [ 2]  << RECV: #0:3
+ >        +4003.59ms    [ 0]  >> SEND: #0:4 :OK
+ >        +4003.59ms    [ 2]  >> SEND: #2:3 :OK
+ >        +4003.64ms    [ 2]  -- DROP: TXING
+ >        +4003.64ms    [ 2]  >> SEND: #2:4 :OK
+ >        +4003.64ms    [ 0]  -- DROP: TXING
+ >        +4003.64ms    [ 0]  >> SEND: #0:5 :OK
+ >        +4003.64ms    [ 1]  -- DROP: PREAMBLE_DETECT_FAILURE
+ >        +4003.64ms    [ 1]  -- DROP: PREAMBLE_DETECT_FAILURE
+ >        +4004.27ms    [ 0]  >> SEND: #0:6 :OK
+ >        +4004.27ms    [ 1]  >> SEND: #1:4 :OK
+ >        +4004.91ms    [ 0]  << RECV: #1:4
+ >        +4004.91ms    [ 2]  << RECV: #1:4
+ >           +4005ms    [ 1]  >> SEND: #1:5 :OK
+ >           +4005ms    [ 2]  >> SEND: #2:5 :OK
+ >        +4005.64ms    [ 1]  >> SEND: #1:6 :OK
+ >        +4005.64ms    [ 2]  >> SEND: #2:6 :OK
+ >        +4005.69ms    [ 0]  << RECV: #1:5
+ >        +4005.69ms    [ 2]  << RECV: #1:5
+ >        +4006.42ms    [ 0]  << RECV: #2:4
+ >        +4006.42ms    [ 1]  << RECV: #2:4
+ >         +4007.1ms    [ 0]  << RECV: #2:5
+ >         +4007.1ms    [ 1]  << RECV: #2:5
+ >        +4007.89ms    [ 0]  << RECV: #1:6
+ >        +4007.89ms    [ 2]  << RECV: #1:6
+ >        +4008.61ms    [ 0]  << RECV: #2:6
+ >        +4008.61ms    [ 1]  << RECV: #2:6
+ >         +4009.4ms    [ 1]  << RECV: #0:5
+ >         +4009.4ms    [ 2]  << RECV: #0:5
+ >        +4010.44ms    [ 1]  << RECV: #0:6
+ >        +4010.44ms    [ 2]  << RECV: #0:6

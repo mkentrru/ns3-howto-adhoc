@@ -35,6 +35,8 @@
 
 ## 1. Подготовить сборку
 
+> Если хочется собраться с нормальной визуализацией то [см. пункт "Дополнительно"](#сборка-с-pyviz)
+
 ```sh
 ./ns3 configure --cxx-standard 20 -d debug --enable-static\
     --enable-asserts --enable-logs\
@@ -469,7 +471,7 @@ user@w:~/workspace/ns3-projects/ns3-howto-adhoc/basic-echo
 
 Суть в том, что для `adhoc` никто этим при текущей настройке симуляции не занимается
 
-# Что делать c колизией `adhoc-ерам`
+# Что делать c колизией `adhoc-ерам`: *начало поиска*
 
 ## Костыль в рамках симуляции
 
@@ -496,7 +498,7 @@ user@w:~/workspace/ns3-projects/ns3-howto-adhoc/basic-echo
 > Настоятельно рекомендую его к прочтению, для понимания основных конценпций `802.11` на уровне `MAC`
 
 Благо, мы работаем с симуляцией и можем отдебажить происходящее
-
+<!-- TODO: fix this -->
 Честно, я сам не полностью понимаю, что делать, но план такой:
 1. Зафиксировать текущие настройки `wifi`
 2. Посмотреть, какие объекты создаются для `wifi`, и что можно настроить
@@ -559,10 +561,10 @@ wifi.SetRemoteStationManager(
 // Install Wi-Fi devices to nodes
 ns3::NetDeviceContainer devices_container = wifi.Install(wifiPhy, wifiMac, c);
 ```
-В качестве параметров передаются `ns3::YansWifiPhyHelper`, `ns3::WifiMacHelper` и контейнер с узлами.
+В качестве параметров передаются недавно настроенные `ns3::YansWifiPhyHelper`, `ns3::WifiMacHelper` и контейнер с узлами.
 > Напомню: для первого мы определили симуляцию канала, а для второго тип: `ns3::AdhocWifiMac`.
 
-Я немного модифицировал функцию во благо читабельности:
+Я немного модифицировал функцию для читабельности:
 
 ```cpp
 // ns-3.42/src/wifi/helper/wifi-helper.cc
@@ -614,9 +616,9 @@ WifiHelper::Install(const WifiPhyHelper& phyHelper,
 
 Рассмотрим детальнее, что происходит при создании объектов `ns3::WifiPhy` (2) и `ns3::WifiMac` (4).
 
-#### `ns3::YansWifiPhy`: `PHY layer`
+#### `ns3::WifiPhy` - `ns3::YansWifiPhy`: `PHY layer`
 
-Класс `ns3::YansWifiPhy` отвечает за прием пакетов, переданных ему от `MAC` (`ns3::FrameExchangeManager`), и отправку их в `ns3::YansWifiChannel`, а так же за прием пакетов с этого канала. Важно, что после приёма рассчитывается, был ли он успешным. При успехе пакет передаётся выше - в `MAC`.
+Класс `ns3::YansWifiPhy` отвечает за прием пакетов, переданных ему от `MAC` (`ns3::FrameExchangeManager`), и отправку их в `ns3::YansWifiChannel`, а так же за прием пакетов с этого канала. После приёма рассчитывается, был ли он успешным. При успехе пакет передаётся выше - в `MAC`.
 
 В вызове `ns3::YansWifiPhyHelper::Create`, для `ns3::YansWifiPhy` создаются следующие объекты:
 - `ns3::InterferenceHelper`
@@ -628,9 +630,9 @@ WifiHelper::Install(const WifiPhyHelper& phyHelper,
 
 Внутренняя реализация обработки пакета при приёме описана в [Документации](https://www.nsnam.org/docs/release/3.42/models/html/wifi-design.html#yanswifiphy-and-wifiphystatehelper). 
 
-Важно, кстати то, что приём пакетов реалуется в объекте `ns3::PhyEntity`, который создаётся при установке стандарта для `ns3::WifiPhy`. Первая функция, которая начинает обработку это [`ns3::PhyEntity::StartReceivePreamble`](https://www.nsnam.org/docs/doxygen/dc/d6b/classns3_1_1_phy_entity.html#a22801a65108625e3e50204740b91d6cf). Эта функция виртуальная и меняется, в зависимости от версии стандарта `802.11`. Для стандарта, который используется в эксперимете (`802.11b`), эта функция сразу отбрасывает пакет, если во время его обработки происходит передача. Это объясняет, что узлы `#1` и `#2` не получают друг от друга пакеты, потому что одновременно их отправляют. 
+Важно, кстати, то, что приём пакетов реалуется в объекте `ns3::PhyEntity`, который создаётся при установке стандарта для `ns3::WifiPhy`. Первая функция, которая начинает обработку это [`ns3::PhyEntity::StartReceivePreamble`](https://www.nsnam.org/docs/doxygen/dc/d6b/classns3_1_1_phy_entity.html#a22801a65108625e3e50204740b91d6cf). Эта функция виртуальная и может меняться, в зависимости от версии стандарта `802.11`. Для стандарта, который используется в эксперимете (`802.11b`), эта функция сразу отбрасывает пакет, если во время его обработки уже происходит передача. Это объясняет то, что узлы `#1` и `#2` не получают друг от друга пакеты, так как одновременно их отправляют. 
 
-Чтобы не отдебаживать весь ужас, который происходит на таком низком уровне реализации можно включить логи модуля `PhyEntity` при запуске эксперимента строкой:
+Чтобы не отдебаживать весь ужас, который происходит на таком низком уровне реализации, можно включить логи модуля `PhyEntity` при запуске эксперимента с помощью строки:
 ```cpp
 ns3::LogComponentEnable("PhyEntity", ns3::LOG_LEVEL_DEBUG);
 ```
@@ -654,11 +656,112 @@ ns3::LogComponentEnable("PhyEntity", ns3::LOG_LEVEL_DEBUG);
 [index=0][channel=1][band=2.4GHz] Drop packet because PHY preamble detection failed
 ...
 ```
-То есть именно на этом уровне симуляция определяет, что пакеты `#1:0` и `#2:0` дропаются узлами, либо из-за того, что они сами вещают в это время (`already in Tx`), либо из-за того, что их одновременная передача помешала приёму (`PHY preamble detection failed`).
+То есть именно на этом уровне симуляция определяет, что пакеты `#1:0` и `#2:0` дропаются узлами, либо из-за того, что узлы уже вещают в это время (`already in Tx`), либо из-за того, что их одновременная передача помешала приёму (`PHY preamble detection failed`).
 
-> Отлично, мы диагностировали проблему эксперимента!
+> Отлично, мы диагностировали проблему эксперимента про шторм!
 
-Как бороться с этой проблемой?
+Как бороться с этой проблемой? Посмотрим, кому `PhyEntity` сообщает, что пакет был отброшен.
+
+Если посмотреть на исходный код [`ns3::PhyEntity::StartReceivePreamble`](https://www.nsnam.org/docs/doxygen/d8/d29/phy-entity_8cc_source.html#l00390), видно, что сообщение об отбросе пакета выполняется с помощью вызова [`ns3::DropPreambleEvent`](https://www.nsnam.org/docs/doxygen/d8/d29/phy-entity_8cc_source.html#l00508), в которой объект `ns3::WifiPhy` "уведомляется" о дропе вызовом [`ns3::WifiPhy::NotifyRxPpduDrop`](https://www.nsnam.org/docs/doxygen/dc/d2d/classns3_1_1_wifi_phy.html#a78ab40299158b27a1c13d8db9a56ceeb). По факту, это "уведомление" - `callback`, к которому можно подключиться в рамках приложения.
+
+Это и реализовано в третьем эксперименте.
+
+# Третий эксперимент. Повторная отправка при ошибке получения: `echo-resend-upon-rx-drop`
+
+Благодаря рассмотренному выше сообщению от `ns3::WifiPhy` можно установить, что принятие пакета завершилось ошибкой.
+
+Чтобы получить это сообщение нужно подключить свой `callback` к событию `ns3::WifiPhy::PhyRxDrop`. Для этого нужно найти его в списке `TraceSources` документации [`ns3::WifiPhy`](https://www.nsnam.org/docs/doxygen/dc/d2d/classns3_1_1_wifi_phy.html). И посмотреть сигнатуру при описании объекта, который хранит соответствующий событию список `callback`-ов [`ns3::WifiPhy::m_phyRxDropTrace`](https://www.nsnam.org/docs/doxygen/dc/d2d/classns3_1_1_wifi_phy.html#aaa2fe85abd37dcb2ce9d4c343124908b):
+```cpp
+TracedCallback<Ptr<const Packet>, WifiPhyRxfailureReason> ns3::WifiPhy::m_phyRxDropTrace
+```
+
+Тогда понятно, что первым аргументом передаётся указатель на дропнутый пакет (`Ptr<const Packet>`), а вторым причина его отбрасывания [`ns3::WifiPhyRxfailureReason`](https://www.nsnam.org/docs/doxygen/df/d5e/group__wifi.html#ga31d20111afabdc05bd83999d2af0aef6).
+
+То есть при срабатывании `callback`-а на данное событие можно понять, почему пакет был отброшен. И если причина в том, что в момент получения интерфейс находился в состоянии отправки, можно заключить, что мы пытались вещать одновременно с другим узлом. Значит, мы не получили пакеты друг друга и помешали получить эти пакеты общим соседям.
+
+Подключение к этому событию реализовано в приложении эксперимента `echo-resend-upon-rx-drop` в приложении `EchoResendUponRxDrop`:
+```cpp
+// echo-resend-upon-rx-drop/src/echo-resend-upon-rx-drop-app.cpp
+void EchoResendUponRxDrop::StartApplication()
+{
+    ConfigurePromiscReceiveCallback();
+    ConnectRxDrop();
+}
+void EchoResendUponRxDrop::ConnectRxDrop()
+{
+    ns3::Ptr<ns3::WifiPhy> phy = p_dev->GetPhy();
+    phy->TraceConnectWithoutContext("PhyRxDrop",
+        ns3::MakeCallback(&EchoResendUponRxDrop::HandleRxDrop, this));
+}
+```
+
+Отлично! Теперь мы можем узнать, что кто-то пытался вещать в одно время с нами, и мы друг другу помешали. Надо решить, как теперь поступать. Можно попробовать просто снова отправить пакет:
+```cpp
+// echo-resend-upon-rx-drop/src/echo-resend-upon-rx-drop-app.cpp
+void EchoResendUponRxDrop::HandleRxDrop(
+    ns3::Ptr<const ns3::Packet> pkt,
+    ns3::WifiPhyRxfailureReason reason)
+{
+    NS_LOG_INFO(LOG_PREFIX << " -- DROP: " << reason);
+    if (reason == ns3::WifiPhyRxfailureReason::TXING)
+    {
+        BroadcastPlainString("hello again!");
+    }
+}
+```
+Уместно предположить, что узлы снова попробуют вещать одновременно и ничего не получится. Однако, если мы снова попробуем воспроизвести `broadcast storm` с запуском трёх соседствующих узлов то получим:
+```sh
+user@w:~/workspace/ns3-projects/ns3-howto-adhoc/echo-resend-upon-rx-drop
+ ~~~> ./experiment --n=3 2>&1 | tee run-n-3.log
+ >           +1000ms    [ 0]  >> SEND: #0:0 :OK
+ >        +1000.64ms    [ 1]  << RECV: #0:0
+ >        +1000.64ms    [ 2]  << RECV: #0:0
+ >        +2000.64ms    [ 1]  >> SEND: #1:0 :OK
+ >        +2000.64ms    [ 2]  >> SEND: #2:0 :OK
+ >        +2000.69ms    [ 2]  -- DROP: TXING
+ >        +2000.69ms    [ 2]  >> SEND: #2:1 :OK
+ >        +2000.69ms    [ 1]  -- DROP: TXING
+ >        +2000.69ms    [ 1]  >> SEND: #1:1 :OK
+ >         +2000.7ms    [ 0]  -- DROP: PREAMBLE_DETECT_FAILURE
+ >         +2000.7ms    [ 0]  -- DROP: PREAMBLE_DETECT_FAILURE
+ >        +2002.07ms    [ 0]  << RECV: #2:1
+ >        +2002.07ms    [ 1]  << RECV: #2:1
+ >           +2003ms    [ 0]  << RECV: #1:1
+ >           +2003ms    [ 2]  << RECV: #1:1
+ >        +3002.07ms    [ 0]  >> SEND: #0:1 :OK
+ >        +3002.07ms    [ 1]  >> SEND: #1:2 :OK
+ >        +3002.12ms    [ 1]  -- DROP: TXING
+ >        +3002.12ms    [ 1]  >> SEND: #1:3 :OK
+ >        +3002.12ms    [ 0]  -- DROP: TXING
+ >        +3002.12ms    [ 0]  >> SEND: #0:2 :OK
+ >        +3002.13ms    [ 2]  -- DROP: PREAMBLE_DETECT_FAILURE
+ >        +3002.13ms    [ 2]  -- DROP: PREAMBLE_DETECT_FAILURE
+ >           +3003ms    [ 0]  >> SEND: #0:3 :OK
+ >           +3003ms    [ 2]  >> SEND: #2:2 :OK
+ >        +3003.59ms    [ 0]  << RECV: #1:3
+ >        +3003.59ms    [ 2]  << RECV: #1:3
+ >        +3004.27ms    [ 0]  << RECV: #2:2
+ >        +3004.27ms    [ 1]  << RECV: #2:2
+ >           +3005ms    [ 1]  << RECV: #0:2
+ >           +3005ms    [ 2]  << RECV: #0:2
+ >        +3005.64ms    [ 1]  << RECV: #0:3
+ >        +3005.64ms    [ 2]  << RECV: #0:3
+```
+> Полный лог запуска: `echo-resend-upon-rx-drop/run-n-3.log`
+
+А получим мы вполне рабочий `broadcast storm`!
+
+Закономерный вопрос: *почему повторная отправка пакета стала успешной, в отличии от первой, несмотря на то, что узлы снова "отправляют" пакеты одновременно?*
+
+А дело в том, что, на самом деле, `wifi` интерфейсы тоже поняли, что что-то пошло не по плану и "приняли меры". Что это за меры рассмотрено далее при разборе механизма "отправки" пакетов.
+
+В целом, это один из рабочих способов решения проблемы, однако у него есть проблемы. Одна из них - тот факт, что если узлы не были "соседями" (не дотянулись друг до друга во время передачи), то они и не поймут, что помешали друг другу. Это называется проблемой ["скрытого узла"](https://en.wikipedia.org/wiki/Hidden_node_problem) (`Hidden node problem`).
+
+## `Hidden node problem` - проблема скрытого узла
+
+![hidden-node-pic](files/img/hidden-node.png)
+
+На примере данной картинки: `A` и `C` не являются "соседями", поэтому, когда они вещают одновременно `B` не получает пакеты из-за их коллизии.
 
 
 
@@ -745,3 +848,70 @@ void Txop::StartAccessAfterEvent(/* ... */) {
 <!-- TODO: call waiting as backoff -->
 https://www.nsnam.org/docs/release/3.42/models/html/wifi-design.html#channel-access
 
+
+
+
+# Дополнительно
+
+
+## Сборка с PyViz
+
+> NetAnim мне не понравился - не показывает беспроводные волны
+
+Микродокументация вот [тут](https://www.nsnam.org/wiki/PyViz#Installation)
+
+### Дополнительные пакеты
+Для `WSL Debian 12`:
+
+```sh
+python3 -m pip install cppyy --break-system-packages
+sudo apt install ipython3\
+    python3-gi python3-gi-cairo python3-pygraphviz\
+    gir1.2-gtk-3.0 gir1.2-goocanvas-2.0
+```
+
+Конфигурация сборки:
+```sh
+./ns3 configure --cxx-standard 20 -d debug --enable-static\
+    --enable-asserts --enable-logs\
+    --disable-examples --disable-tests --disable-gtk\
+    --enable-python-bindings\
+    --output-directory static-build\
+    --disable-modules "csma;buildings;uan;fd-net-device;lr-wpan;virtual-net-device;topology-read;config-store;"
+```
+
+После сборки надо прокинуть пути до собранных `python` модулей, чтобы они были доступны при запуске из любого места:
+```sh
+ln -s $(pwd)/static-build/bindings/python/ns ~/.local/lib/python3.11/site-packages/ns
+ln -s $(pwd)/static-build/bindings/python/visualizer ~/.local/lib/python3.11/site-packages/visualizer
+```
+
+```sh
+ > ls /lib/x86_64-linux-gnu | grep python
+libpython3.11.a # <- Вот статическая либа, которая нас интересует
+libpython3.11.so
+libpython3.11.so.1
+libpython3.11.so.1.0
+```
+Для неё нужно установить:
+```makefile
+PYBINDING_LIB_FLAG=-lpython3.11
+```
+
+
+
+<!-- ```sh
+sudo apt install python3-dev python3-pygraphviz python3-pygoocanvas
+```
+idk
+python-rsvg
+
+buster
+python-kiwi
+
+pip:
+python3 -m pip install pycairo --break-system-packages
+
+shit:
+python-gnome2
+python-gnomedesktop -->

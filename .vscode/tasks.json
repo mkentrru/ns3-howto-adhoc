@@ -17,6 +17,11 @@
             "label": "make-basic-echo",
             "type": "shell",
             "command": "make -C basic-echo debug"
+        },
+        {
+            "label": "make-echo-resend-upon-rx-drop",
+            "type": "shell",
+            "command": "make -C echo-resend-upon-rx-drop debug"
         }
     ]
 }

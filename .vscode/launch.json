@@ -56,6 +56,19 @@
             "externalConsole": false,
             "MIMode": "gdb",
             "preLaunchTask": "make-basic-echo"
+        },
+        {
+            "name": "echo-resend-upon-rx-drop-n-3",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/echo-resend-upon-rx-drop/experiment",
+            "args": ["--n=3"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/echo-resend-upon-rx-drop",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "make-echo-resend-upon-rx-drop"
         }
 
     ]
