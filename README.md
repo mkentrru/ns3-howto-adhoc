@@ -6,7 +6,7 @@
 
 # Немного про `ns3`
 
-По большому счёту, `ns3` это набор `C++` классов (*модулей*), которые реализовывают что-то похожее на настроящее сетевое взаимодействие и инструменты для удобного использования этих классов. 
+По большому счёту, `ns3` это набор `C++` классов (*модулей*), которые реализовывают что-то похожее на настоящее сетевое взаимодействие и инструменты для удобного использования этих классов. 
 
 > Суть в том, что всё это добро компилируется и нужно быть осторожным с компилятором `C++`: смотреть на реализацию того, с чем вы работаете (*особенно с контейнерами от `ns3`*). Если компилятор не ругается, это не значит, что он соберёт всё так, как вы хотите.
 
@@ -124,7 +124,7 @@ testing statically linked with ns-3
 
 ## 5. Как отлаживаться в `VSCode`
 
-В файле `.vscode/launch.json` лежат конфиграции запуска и отладки экспериментов из этого проекта. Одним из ключевых параметров является `preLaunchTask`, который ссылается на задачи (*как правило, сборку*) в `.vscode/tasks.json`, выполняемые перед запуском.
+В файле `.vscode/launch.json` лежат конфигурации запуска и отладки экспериментов из этого проекта. Одним из ключевых параметров является `preLaunchTask`, который ссылается на задачи (*как правило, сборку*) в `.vscode/tasks.json`, выполняемые перед запуском.
 
 > В файле `.vscode/c_cpp_properties.json` не забудьте указать путь до `ns-3.42/static-build/include/` в `includePath`, чтобы `VSCode` подсасывал нужные заголовочные файлы.
 
@@ -201,14 +201,6 @@ InstallSimpleWifiDevice(ns3::NodeContainer nodes, bool enable_pcap=true);
 
 ![WifiArch](files/img/WifiArchitecture.png)
 
-
-
-
-
-
-
-<!-- TODO: clean spaces -->
-
 Ключевые элементы модели "сверху-вниз":
 1. `MAC high` - высокоуровневые операции, время выполнения которых не важно
 > Это, например, отправка [`Beacon frame`](https://en.wikipedia.org/wiki/Beacon_frame), когда `wifi` интерфейсы работают в режиме инфрастуктуры `Access Point` (`AP` - точка доступа) -> `non-AP Station` (`STA` - потребитель). 
@@ -216,7 +208,7 @@ InstallSimpleWifiDevice(ns3::NodeContainer nodes, bool enable_pcap=true);
 > Однако для `adhoc` таких функций нет и узлы работают в режиме `Independent Basic Service Set` (`IBSS`), что в `ns3` означает режим `ns3::AdhocWifiMac` при настройке `ns3::WifiMacHelper`.
 
 2. `MAC low` - отвечает за отправку фреймов. В том числе: их сбор (из нескольких), ретрансляцию и прочее.
-> **На самом деле является самым важным уровнем**, ибо именно он реализует доступ к каналу передачи, пытаясь исключить коллизии одновременной передачи с помощью [CSMA/CA](https://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_avoidance).
+> На самом деле является важным уровнем, ибо именно он реализует доступ к каналу передачи, пытаясь исключить коллизии одновременной передачи с помощью [CSMA/CA](https://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_avoidance).
 
 3. `PHY layer` - "физический" уровень. На данном уровне моделируется получение пакетов и использование энергии на отправку. В `ns3` реализовано два варианта "физического" уровня: `YansWifiPhy` и `SpectrumWifiPhy`. 
 > `SpectrumWifiPhy` использует подход глубоко моделирования сигналов для приближения к реальности, которая, как правило, используется для специфических исследований, ибо слишком навороченная.
@@ -463,7 +455,7 @@ user@w:~/workspace/ns3-projects/ns3-howto-adhoc/basic-echo
 
 Первая идея заключается в том, что фреймы передаются всем, до кого дотягиваются антенны передающего. И эту передачу можно "почувствовать" своими антеннами и подождать
 
-Вторая идея заключается в [простом алгоритме](https://en.wikipedia.org/wiki/Carrier-sense_multiple_access_with_collision_avoidance):
+Вторая идея заключается в [простом алгоритме DCF](https://en.wikipedia.org/wiki/Distributed_coordination_function):
  1. Перед отправкой `STA` заправшивает у `AP` разрешение пакетом: `RTS` (`Request to Send`)
  2. `AP` отвечает `CTS` (`Clear to Send`) одному узлу
  3. Если `CTS` предназначено нам, то мы вещаем, иначе - ждёмс.
@@ -481,42 +473,275 @@ user@w:~/workspace/ns3-projects/ns3-howto-adhoc/basic-echo
 
 ## Костыль в рамках симуляции
 
-Некрутой вариант, с которым может возникнуть много проблем: добавить для каждого узла некий `timeout` перед отправкой. 
+Некрутой вариант, с которым может возникнуть много проблем: явно синхронизировать отправку пакетов по времени, чтобы узлы никогда не мешали друг другу
 
 Я не стану реализовывать это здесь, но суть данной симуляции такова:
 
  - Определить время `Tp`, за которое узел передаёт пакет. Взять время `Ts = 1,5 * Tp` (с запасом)
  - На каждом узле организовать очередь пакетов `Q`
  - В зависимости от числа узлов `N` определить время `Ti = Ts * N`, за которое каждый узел успеет отправить пакет
- - Для каждого узла настроить отправку одно пакета из `Q` раз в `Ts`
- - При этом задержка перед отправкой: `Td = NodeId * Ts` 
+ - Для каждого узла настроить отправку одно пакета из `Q` раз в `Ti`
+ - При этом задержка перед отправкой первого пакета: `Td = NodeId * Ts` 
 <!-- TODO: insert pic -->
 
-Одна из очевидых проблем такого подхода - о реактивности общения узлов можно забыть. Плюс, на реальных устройствах такой синхронизации добиться ~~почти~~ невозможно.
+Одна из очевидых проблем такого подхода: о реактивности общения узлов можно забыть. На реальных устройствах такой синхронизации добиться ~~почти~~ невозможно.
 
 > Но если любой ответ узла уместить в один пакет, то как бы вроде норм, но с каждой такой условностью мы всё дальше от ~~бога~~ настоящего `adhoc-инга`.
 
 ## Поиск решения
 
-> Одним из вариантов - сделать что-то похожее на регуляцию доступа в режиме `BSS`
+> Однин из вариантов - настроить что-то похожее на регуляцию доступа в режиме `BSS`
 
-Подробно изучить вопрос используемых `wifi` технологий для передачи информации, а также особенностях версий стандарта `802.11` можно в [этом документе](references/Overview%20of%20the%20802.11%20Physical%20Layer%20and%20Transmitter%20Measurements.pdf)
+> Подробно изучить вопрос используемых `wifi` технологий для передачи информации, а также особенностях версий стандарта `802.11` можно в [этом документе](references/Overview%20of%20the%20802.11%20Physical%20Layer%20and%20Transmitter%20Measurements.pdf).
+> Настоятельно рекомендую его к прочтению, для понимания основных конценпций `802.11` на уровне `MAC`
 
-> Настоятельно рекомендую его к прочтению *хотя бы по-диагонали*, для понимания основных конценпций `802.11` на уровне `MAC`
+Благо, мы работаем с симуляцией и можем отдебажить происходящее
+
+Честно, я сам не полностью понимаю, что делать, но план такой:
+1. Зафиксировать текущие настройки `wifi`
+2. Посмотреть, какие объекты создаются для `wifi`, и что можно настроить
+3. Рассмотреть, как эти объекты взаимодействуют
+4. Узнать, какой объект понимает, что получение пакета не получилось
+5. Выяснить, смотрит ли вообще хоть кто-то за этим
+
+### Текущая настройка
+
+Для текущего эксперимента настройка при создании интерфейса сначала настраивается `ns3::YansWifiPhyHelper`:
+```cpp
+    // Configure PHY layer, Channel and WifiPhy
+    ns3::YansWifiPhyHelper wifiPhy;
+    ns3::YansWifiChannelHelper wifiChannel = ns3::YansWifiChannelHelper::Default();
+    wifiPhy.SetChannel(wifiChannel.Create());
+```
+С помощью `ns3::YansWifiChannelHelper` создаётся канал (`channel`) с параметрами по-умолчанию. Этот объект отвечает за симуляцию передачи сигналов. Если посмотреть на докумендацию [`ns3::YansWifiChannel`](https://www.nsnam.org/docs/doxygen/df/d0a/classns3_1_1_yans_wifi_channel.html), можно увидеть, что для него выполняется настройка двух параметров:
+- `PropagationDelayModel` - модель задержки при передаче сигналов по каналу
+- `PropagationLossModel` - модель потери информации при передаче сигналов по каналу
+
+Это нас не интересует. Важно, что этот канал устанавливается объекту `ns3::WifiPhy`, который создаётся немного позже с помощью `ns3::YansWifiPhyHelper`.
+
+Далее с помощью `ns3::WifiMacHelper` настраивается уровень `ns3::WifiMac`:
+```cpp
+// Configure WifiMac
+ns3::WifiMacHelper wifiMac;
+wifiMac.SetType("ns3::AdhocWifiMac");
+```
+Вызовом `SetType("ns3::AdhocWifiMac")` для будущего объекта `WifiMac` установлен тип `ns3::AdhocWifiMac`
+
+Последним шагом является настройка параметров `ns3::WifiHelper`, с помощью которого выполняется создание интерфейсов и их настройка в рамках симуляции.
+```cpp
+// Configure Wifi, rate control and data mode
+std::string phyMode("DsssRate1Mbps");
+ns3::WifiHelper wifi;
+wifi.SetStandard(ns3::WIFI_STANDARD_80211b);
+wifi.SetRemoteStationManager(
+    "ns3::ConstantRateWifiManager",
+    "DataMode", ns3::StringValue(phyMode),
+    "ControlMode", ns3::StringValue(phyMode)
+);
+```
+
+Здесь устанавливается используемый стандарт `802.11b`. По факту, он является самым старым из доступных в симуляции, но его влияние в рамках эксперимента не важно. Гораздно важнее здесь вызов `SetRemoteStationManager`, который определяет используемый узлом [`ns3::WifiRemoteStationManager`](https://www.nsnam.org/docs/doxygen/d3/dcb/classns3_1_1_wifi_remote_station_manager.html). По `doxygen` неочевидно, зачем это вообще нужно. Однако если мы смотрим на древо наследований, то увидим реализации `rate control` алгоритмов. 
+ 
+ > Я не знаю, как это понять человеку, который только-только вкатился
+
+Само семейство алгоритмов `rate control` отвечает за изменение используемого режима передачи .
+
+[Хороший обзорный материал по алгоритмам `rate control`](./references/MAC-layer%20rate%20control%20for%20802.11%20networks.pdf)
+
+<!-- TODO: описать по-человечески, за что они отвечают -->
+
+Теперь, когда мы ещё раз посмотрели на используемых `helper`-ов, вглянем, как они используются при создании интерфейса
+
+### Какие объекты создаются для `wifi` интерфейсов
+
+Создание и настройку интерфейсов выполняет `ns3::WifiHelper` в вызове `Install`:
+```cpp
+// Install Wi-Fi devices to nodes
+ns3::NetDeviceContainer devices_container = wifi.Install(wifiPhy, wifiMac, c);
+```
+В качестве параметров передаются `ns3::YansWifiPhyHelper`, `ns3::WifiMacHelper` и контейнер с узлами.
+> Напомню: для первого мы определили симуляцию канала, а для второго тип: `ns3::AdhocWifiMac`.
+
+Я немного модифицировал функцию во благо читабельности:
+
+```cpp
+// ns-3.42/src/wifi/helper/wifi-helper.cc
+NetDeviceContainer
+WifiHelper::Install(const WifiPhyHelper& phyHelper,
+                    const WifiMacHelper& macHelper, /* ... */)
+{
+    /* ... */
+    // Для каждого узла:
+
+    Ptr<WifiNetDevice> device = CreateObject<WifiNetDevice>();  // [1]
+    node->AddDevice(device);
+    device->SetStandard(ns3::WIFI_STANDARD_80211b);
+
+    // В оригинале возрщается вектор, но используемый нами YansWifiPhyHelper
+    // возращает только один объект: 
+    // https://www.nsnam.org/docs/doxygen/d8/ddb/yans-wifi-helper_8cc_source.html#l00093
+    // std::vector<Ptr<WifiPhy>> phys = phyHelper.Create(node, device);
+    Ptr<WifiPhy> phys = 
+        phyHelper.Create(node, device);                         // [2]
+    device->SetPhys(phys);
+    phys->ConfigureStandard(ns3::WIFI_STANDARD_80211b);         // [3]
+    
+    Ptr<WifiRemoteStationManager> managers = 
+        stationManagers.Create<WifiRemoteStationManager>());    // [4]
+    device->SetRemoteStationManagers(managers);
+
+    Ptr<WifiMac> mac = 
+        macHelper.Create(device, m_standard);                   // [5]
+
+    Ptr<WifiMacQueue> wmq = 
+        mac->GetTxop()->GetWifiMacQueue();                      // [6]
+    Ptr<NetDeviceQueueInterface> ndqi = 
+        CreateObject<NetDeviceQueueInterface>();
+    ndqi->GetTxQueue(0)->ConnectQueueTraces(wmq);
+    device->AggregateObject(ndqi);
+
+    /* ... */
+}
+```
+Тут происходит следующее:
+
+1. Настройка объекта `ns3::WifiNetDevice`
+2. Настройка объекта `ns3::WifiPhy`, отвечающего за `PHY layer`
+3. Установка стандарта, который используется `ns3::WifiPhy`
+4. Настройка объекта `ns3::WifiRemoteStationManager`, реализующего `rate control` алгоритмы (в этом эксперименте не используются)
+5. Настройка объекта `ns3::WifiMac`, отвечающего за всё, что делается на уровне `MAC`
+6. Настройка очередей фреймов - это уже механизмы `ns3` и нам не интересно
+
+Рассмотрим детальнее, что происходит при создании объектов `ns3::WifiPhy` (2) и `ns3::WifiMac` (4).
+
+#### `ns3::YansWifiPhy`: `PHY layer`
+
+Класс `ns3::YansWifiPhy` отвечает за прием пакетов, переданных ему от `MAC` (`ns3::FrameExchangeManager`), и отправку их в `ns3::YansWifiChannel`, а так же за прием пакетов с этого канала. Важно, что после приёма рассчитывается, был ли он успешным. При успехе пакет передаётся выше - в `MAC`.
+
+В вызове `ns3::YansWifiPhyHelper::Create`, для `ns3::YansWifiPhy` создаются следующие объекты:
+- `ns3::InterferenceHelper`
+- `ns3::ErrorRateModel`
+- `ns3::PreambleDetectionModel`
+- Устанавливается канал, созданный с помощью `ns3::YansWifiChannelHelper`
+
+Все эти объекты используются `PHY layer` для того, чтобы сэмулировать принятие пакета, а точнее сэмулировать те ошибки, которые могут возникнуть при реальном получении сигнала. Важно отметить, что именно `ns3::InterferenceHelper` определяет, помешали ли передаче пакета другие сигналы.
+
+Внутренняя реализация обработки пакета при приёме описана в [Документации](https://www.nsnam.org/docs/release/3.42/models/html/wifi-design.html#yanswifiphy-and-wifiphystatehelper). 
+
+Важно, кстати то, что приём пакетов реалуется в объекте `ns3::PhyEntity`, который создаётся при установке стандарта для `ns3::WifiPhy`. Первая функция, которая начинает обработку это [`ns3::PhyEntity::StartReceivePreamble`](https://www.nsnam.org/docs/doxygen/dc/d6b/classns3_1_1_phy_entity.html#a22801a65108625e3e50204740b91d6cf). Эта функция виртуальная и меняется, в зависимости от версии стандарта `802.11`. Для стандарта, который используется в эксперимете (`802.11b`), эта функция сразу отбрасывает пакет, если во время его обработки происходит передача. Это объясняет, что узлы `#1` и `#2` не получают друг от друга пакеты, потому что одновременно их отправляют. 
+
+Чтобы не отдебаживать весь ужас, который происходит на таком низком уровне реализации можно включить логи модуля `PhyEntity` при запуске эксперимента строкой:
+```cpp
+ns3::LogComponentEnable("PhyEntity", ns3::LOG_LEVEL_DEBUG);
+```
+Файл с логом запуска эксперимента с тремя узлами лежит по пути: `basic-echo/run-n-3-phyentity.log`. Важны для нас четыре момента с `drop`-ом пакетов:
+```log
+...
+ >           +1000ms    [ 0]  >> SEND: #0:0 :OK
+...
+ >        +1000.64ms    [ 1]  << RECV: #0:0
+...
+ >        +1000.64ms    [ 2]  << RECV: #0:0
+ >        +2000.64ms    [ 1]  >> SEND: #1:0 :OK
+ >        +2000.64ms    [ 2]  >> SEND: #2:0 :OK
+...
+[index=0][channel=1][band=2.4GHz] Drop packet because already in Tx
+...
+[index=0][channel=1][band=2.4GHz] Drop packet because already in Tx
+...
+[index=0][channel=1][band=2.4GHz] Drop packet because PHY preamble detection failed
+...
+[index=0][channel=1][band=2.4GHz] Drop packet because PHY preamble detection failed
+...
+```
+То есть именно на этом уровне симуляция определяет, что пакеты `#1:0` и `#2:0` дропаются узлами, либо из-за того, что они сами вещают в это время (`already in Tx`), либо из-за того, что их одновременная передача помешала приёму (`PHY preamble detection failed`).
+
+> Отлично, мы диагностировали проблему эксперимента!
+
+Как бороться с этой проблемой?
 
 
 
 
+### Что происходит при *отправке* - вызове ns3::WifiNetDevice::Send
+
+Для начала посмотрим на функцию отправки из приложения:
+```cpp
+// basic-echo/src/basic-echo-app.cpp
+bool EchoApp::DoBroadcast(ns3::Ptr<ns3::Packet> data)
+{
+    /* ... */
+    bool res = p_dev->Send(data, p_dev->GetBroadcast(), 0);
+```
+
+В ней для устройства `WifiNetDevice` (`p_dev`), установленного в узел с приложением, вызывается `Send`, которая в свою очередь вызывает `private` функцию:
+```cpp
+bool WifiNetDevice::DoSend(
+    Ptr<Packet> packet,
+    std::optional<Address> source, const Address& dest, uint16_t protocolNumber)
+{
+    /* ... */
+    m_mac->Enqueue(packet, realTo);
+    return true;
+}
+```
+В нашем случае `m_mac` является указателем на `ns3::AdhocWifiMac`, так как при установке `wifi` интерфейса указано:
+```cpp
+// basic-echo/src/wifi-helper.cpp
+// InstallSimpleWifiDevice
+    // Configure WifiMac
+    ns3::WifiMacHelper wifiMac;
+    wifiMac.SetType("ns3::AdhocWifiMac");
+```
+То есть `WifiNetDevice::DoSend` передаёт пакет в функцию `ns3::AdhocWifiMac::Enqueue`.
+В этом вызове `ns3::AdhocWifiMac` подготавливает пакет к отправке и выполняет следующий вызов:
+```cpp
+// ns-3.42/src/wifi/model/adhoc-wifi-mac.cc
+void AdhocWifiMac::Enqueue(Ptr<Packet> packet, Mac48Address to) {
+/* ... */
+    GetTxop()->Queue(packet, hdr);
+/* ... */
+}
+```
+В этом вызове пакет добавляется в очередь объекту [`ns3::Txop`](https://www.nsnam.org/docs/doxygen/de/dca/classns3_1_1_txop.html#details). Этот объект отвечает за реализацию алгоритма регуляции доступа к каналу передачи [`DCF`](https://en.wikipedia.org/wiki/Distributed_coordination_function)(или `EDCA`).
+
+После добавления пакета в очередь создаётся событие на обработку очереди (`Txop::StartAccessAfterEvent`) и функция возвращает управление:
+```cpp
+// ns-3.42/src/wifi/model/txop.cc
+void Txop::Queue(Ptr<WifiMpdu> mpdu) {
+    /* ... */
+Simulator::ScheduleNow(
+    &Txop::StartAccessAfterEvent,
+    this,
+    linkId,
+    hasFramesToTransmit.at(linkId),
+    CHECK_MEDIUM_BUSY);
+    /* ... */
+}
+```
+То есть после вызова `p_dev->Send` в `EchoApp::DoBroadcast` пакет только добавляется в очередь на отправку и возврат из этой функции не означает отправку пакета.
+
+### Подготовка к настоящей отправке
+При наличии пакетов в очереди выполняется подготовка к отправке:
+1. С помощью объекта `ns3::ChannelAccessManager` проверяется, нужно ли выполнять `backoff`
+2. При необходимости `backoff` выполняется с помощью вызова `GenerateBackoff(linkId)`
+3. Далее запрашивается доступ к каналу `RequestAccess` с помощью объекта `ns3::ChannelAccessManager`
+```cpp
+void Txop::StartAccessAfterEvent(/* ... */) {
+    /* ... */
+    if (m_mac->GetChannelAccessManager(linkId)->NeedBackoffUponAccess(
+        this, hadFramesToTransmit, checkMediumBusy))
+    {
+        GenerateBackoff(linkId);
+    }
+    m_mac->GetChannelAccessManager(linkId)->RequestAccess(this);
+}
+```
+
+#### Проверка необходимости `backoff` ожидания
 
 
 
-
-
-
-
-
-
-
-
-
+<!-- TODO: call waiting as backoff -->
+https://www.nsnam.org/docs/release/3.42/models/html/wifi-design.html#channel-access
 

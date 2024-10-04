@@ -43,6 +43,19 @@
             "externalConsole": false,
             "MIMode": "gdb",
             "preLaunchTask": "make-basic-echo"
+        },
+        {
+            "name": "basic-echo-storm-error",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/basic-echo/basic-echo",
+            "args": ["--n=3"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/basic-echo",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "make-basic-echo"
         }
 
     ]
