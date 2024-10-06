@@ -32,8 +32,8 @@
 > Все примеры в этом проекте собираются со статической либой `ns3`
 
 ## 1. Подготовить сборку
-
-> Если хочется собраться с нормальной визуализацией то [см. пункт "Сборка с PyViz"](#сборка-с-pyviz)
+<!-- 
+> Если хочется собраться с нормальной визуализацией то [см. пункт "Сборка с PyViz"](#сборка-с-pyviz) -->
 
 ```sh
 ./ns3 configure --cxx-standard 20 -d debug --enable-static\
@@ -853,12 +853,13 @@ user@w:~/workspace/ns3-projects/ns3-howto-adhoc/echo-resend-upon-rx-drop
 - `--r=52` - расстояние между узлами - `52`
 
 ```sh
-./experiment --loc=line --n=3 --r=52
+./experiment --n=3 --loc=line --r=50 --sender=1
  >           +1000ms    [ 0]  >> SEND: #0:0 :OK
  >        +1000.05ms    [ 1]  -- DROP: PREAMBLE_DETECT_FAILURE
  >        +1000.05ms    [ 2]  -- DROP: PREAMBLE_DETECT_FAILURE
 ```
-<!-- TODO: fix it -->
+
+> Вообще, тут что-то не то
 
 
 # Продолжение поиска решения на уроне `MAC`
@@ -1042,6 +1043,11 @@ ln -s $(pwd)/static-build/bindings/python/visualizer ~/.local/lib/python3.11/sit
 ```
 
 ```sh
+ln -s $PYTHONPATH/ns .venv/lib/python3.11/site-packages/ns
+ln -s $PYTHONPATH/visualizer .venv/lib/python3.11/site-packages/visualizer
+```
+
+```sh
  > ls /lib/x86_64-linux-gnu | grep python
 libpython3.11.a # <- Вот статическая либа, которая нас интересует
 libpython3.11.so
@@ -1052,8 +1058,9 @@ libpython3.11.so.1.0
 ```makefile
 PYBINDING_LIB_FLAG=-lpython3.11
 ```
-
-
+```sh
+STDCXX=20 pip install --verbose cppyy --no-binary=cppyy-cling
+```
 
 <!-- ```sh
 sudo apt install python3-dev python3-pygraphviz python3-pygoocanvas
