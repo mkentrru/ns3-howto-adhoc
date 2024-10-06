@@ -1,4 +1,5 @@
-include ../top.mk
+export _project_root=..
+include $(_project_root)/top.mk
 
 TARGET=experiment
 

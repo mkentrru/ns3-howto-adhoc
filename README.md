@@ -865,6 +865,8 @@ https://www.nsnam.org/docs/release/3.42/models/html/wifi-design.html#channel-acc
 
 ```sh
 python3 -m pip install cppyy --break-system-packages
+python3 -m pip install kiwi --break-system-packages
+
 sudo apt install ipython3\
     python3-gi python3-gi-cairo python3-pygraphviz\
     gir1.2-gtk-3.0 gir1.2-goocanvas-2.0
@@ -876,8 +878,9 @@ sudo apt install ipython3\
     --enable-asserts --enable-logs\
     --disable-examples --disable-tests --disable-gtk\
     --enable-python-bindings\
-    --output-directory static-build\
-    --disable-modules "csma;buildings;uan;fd-net-device;lr-wpan;virtual-net-device;topology-read;config-store;"
+    --output-directory static-build
+
+    # --disable-modules "buildings;uan;fd-net-device;lr-wpan;virtual-net-device;topology-read;config-store;"
 ```
 
 После сборки надо прокинуть пути до собранных `python` модулей, чтобы они были доступны при запуске из любого места:

@@ -74,6 +74,9 @@ int main(int argc, char *argv[])
     anim.EnableWifiPhyCounters(ns3::Seconds(0), ns3::Seconds(10));
 #endif
 
+#ifdef ENABLE_PYVIZ
+    ns3::PyViz();
+#endif
     // Run configured simulation
     ns3::Simulator::Stop(ns3::Seconds(5));
     ns3::Simulator::Run();
