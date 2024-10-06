@@ -21,21 +21,25 @@ int main(int argc, char *argv[])
         ns3::StringValue("ns3::VisualSimulatorImpl"));
 #endif
 
-    // Configure loging
+    // Configure logging
     ns3::LogComponentEnable("echo-resend-upon-rx-drop", ns3::LOG_LEVEL_INFO);
     ns3::LogComponentEnable("EchoApp", ns3::LOG_LEVEL_INFO);
     ns3::LogComponentEnable("EchoResendUponRxDrop", ns3::LOG_LEVEL_INFO);
+
+    ns3::LogComponentEnable("ChannelAccessManager", ns3::LOG_LEVEL_DEBUG);
 
     // Parse arguments
     uint32_t numNodes{2};
     double radius = 5;
     double velocity = 1;
+    uint32_t sender = 0;
     std::string location = "circle";
 
     ns3::CommandLine cmd(__FILE__);
     cmd.AddValue("n", "Number of nodes", numNodes);
     cmd.AddValue("r", "Radius of distribution", radius);
     cmd.AddValue("loc", "Type of distribution: circle / line", location);
+    cmd.AddValue("sender", "First node to broadcast", sender);
     cmd.Parse(argc, argv);
 
     // Create nodes:
@@ -61,10 +65,10 @@ int main(int argc, char *argv[])
     // Install EchoApp to nodes
     EchoCustomBackoffAppInstaller basicAppHelper = EchoCustomBackoffAppInstaller();
     ns3::ApplicationContainer apps = basicAppHelper.Install(c);
-    // Get EchoApp installed to Node#0
-    ns3::Ptr<EchoApp> node_0_app = ns3::DynamicCast<EchoApp>(apps.Get(0));
-    // Schedule broadcast with App at Node#0
-    node_0_app->ScheduleTestBroadcast();
+    // Get EchoApp installed to Node#{sender}
+    ns3::Ptr<EchoApp> node_sender_app = ns3::DynamicCast<EchoApp>(apps.Get(sender));
+    // Schedule broadcast with App at Node#sender
+    node_sender_app->ScheduleTestBroadcast();
 
 #ifdef NETANIM_ENABLED
     ns3::AnimationInterface anim("animation.xml");

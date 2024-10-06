@@ -69,6 +69,19 @@
             "externalConsole": false,
             "MIMode": "gdb",
             "preLaunchTask": "make-echo-resend-upon-rx-drop"
+        },
+        {
+            "name": "echo-resend-hidden-node",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/echo-resend-upon-rx-drop/experiment",
+            "args": ["--n=3", "--loc=line", "--r=52", "--sender=1"],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/echo-resend-upon-rx-drop",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "make-echo-resend-upon-rx-drop"
         }
 
     ]

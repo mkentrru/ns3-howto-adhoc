@@ -11,26 +11,12 @@ int main(int argc, char *argv[])
     // Init ns3 static lib objects
     INIT_STATIC_NS3;
 
-    // Configure loging
+    // Configure logging
     ns3::LogComponentEnable("basic-echo", ns3::LOG_LEVEL_INFO);
     ns3::LogComponentEnable("EchoApp", ns3::LOG_LEVEL_INFO);
 
     // ns3::LogComponentEnable("PhyEntity", ns3::LOG_LEVEL_DEBUG);
-
-
-
-
-    // ns3::LogComponentEnable("Txop", ns3::LOG_LEVEL_DEBUG);
-    // ns3::LogComponentEnable("ChannelAccessManager", ns3::LOG_LEVEL_DEBUG);
-    // ns3::LogComponentEnable("FrameExchangeManager", ns3::LOG_LEVEL_DEBUG);
-    // ns3::LogComponentEnable("PhyEntity", ns3::LOG_LEVEL_DEBUG);
-    // ns3::LogComponentEnable("WifiPhyStateHelper", ns3::LOG_LEVEL_DEBUG);
-    
-    // ns3::LogComponentEnable("YansWifiPhy", ns3::LOG_LEVEL_DEBUG);
-    // ns3::LogComponentEnable("WifiPhy", ns3::LOG_LEVEL_DEBUG);
-    
-    
-    
+        
     
     // Parse arguments
     uint32_t numNodes{2};
@@ -61,16 +47,8 @@ int main(int argc, char *argv[])
     // Schedule broadcast with App at Node#0
     node_0_app->ScheduleTestBroadcast();
 
-#ifdef NETANIM_ENABLED
-    ns3::AnimationInterface anim("animation.xml");
-    anim.SetMobilityPollInterval(ns3::MilliSeconds(100));
-    anim.EnablePacketMetadata(true);
-    anim.EnableWifiMacCounters(ns3::Seconds(0), ns3::Seconds(10));
-    anim.EnableWifiPhyCounters(ns3::Seconds(0), ns3::Seconds(10));
-#endif
-
     // Run configured simulation
-    ns3::Simulator::Stop(ns3::Seconds(10));
+    ns3::Simulator::Stop(ns3::Seconds(5));
     ns3::Simulator::Run();
     ns3::Simulator::Destroy();
 

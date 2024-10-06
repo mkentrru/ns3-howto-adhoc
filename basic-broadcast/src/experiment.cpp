@@ -7,7 +7,7 @@ int main()
     // Init ns3 static lib objects
     INIT_STATIC_NS3;
 
-    // Configure loging
+    // Configure logging
     ns3::LogComponentEnable("basic-broadcast", ns3::LOG_LEVEL_INFO);
     ns3::LogComponentEnable("BasicApp", ns3::LOG_LEVEL_INFO);
 

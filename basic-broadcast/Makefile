@@ -1,6 +1,7 @@
-include ../top.mk
+export _project_root=..
+include $(_project_root)/top.mk
 
-TARGET=basic-broadcast
+TARGET=experiment
 
 
 CXX := g++
@@ -30,7 +31,7 @@ OBJECTS = $(SOURCES:$(SRC_PATH)/%.$(SRC_EXT)=$(BUILD_PATH)/%.o)
 COMPILE_FLAGS = -Wextra -g -static -std=c++20 # -Wall
 INCLUDES = -I include/ -I /usr/local/include -I $(PATH_NS3_STATIC_BUILD_DIR)/include
 # Space-separated pkg-config libraries used by this project
-LIBS = -L$(PATH_NS3_STATIC_BUILD_DIR)/lib -l:libns3.42-static-debug.a
+LIBS = -L$(PATH_NS3_STATIC_BUILD_DIR)/lib -l:libns3.42-static-debug.a $(PYBINDING_LIB_FLAG)
 
 .PHONY: default_target
 default_target: debug
@@ -60,6 +61,7 @@ all: $(BIN_PATH)/$(BIN_NAME)
 	@echo "Making symlink: $(BIN_NAME) -> $<"
 	@$(RM) $(BIN_NAME)
 	@ln -s $(BIN_PATH)/$(BIN_NAME) $(BIN_NAME)
+
 
 # Creation of the executable
 $(BIN_PATH)/$(BIN_NAME): $(OBJECTS)

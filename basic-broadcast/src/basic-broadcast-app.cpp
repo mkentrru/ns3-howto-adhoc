@@ -80,8 +80,7 @@ bool BasicApp::BroadcastPlainString(std::string msg)
 bool BasicApp::DoBroadcast(ns3::Ptr<ns3::Packet> data)
 {
     bool res = p_dev->Send(data, p_dev->GetBroadcast(), 0);
-    NS_LOG_INFO(LOG_PREFIX
-                << "BROADCAST!");
+    NS_LOG_INFO(LOG_PREFIX << "BROADCAST!");
     return res;
 }
 
